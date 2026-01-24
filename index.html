@@ -657,8 +657,8 @@
             showTyping(true);
             
             try {
-                // আপনার আসল API endpoint ইউজ করুন
-                const response = await fetch('http://localhost:5000/ask', {
+                // ✅ Relative URL ব্যবহার করুন - এটাই সঠিক!
+                const response = await fetch('/ask', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -751,7 +751,7 @@
                 "পাইথন প্রোগ্রামিং কিভাবে শিখব?",
                 "আজকের তারিখ কি?",
                 "মেশিন লার্নিং কি?",
-                "ওয়েব ডেভেলপমেন্ট শেখার সেরা উপায় কি?"
+                "ওয়েব ডেভেলপমেন্ট শেখার সেরা উপায় কি?"
             ];
             
             const exampleText = examples.map((ex, i) => `${i + 1}. ${ex}`).join('\n');
