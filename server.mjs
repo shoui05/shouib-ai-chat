@@ -1,10 +1,24 @@
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// ES Module এ __dirname এর জন্য
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Static files serve করুন (HTML, CSS, JS)
+app.use(express.static(__dirname));
+
+// Homepage route - index.html serve করবে
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // Multiple API Keys (একাধিক API Key রাখতে পারেন)
 const API_KEYS = [
@@ -35,10 +49,10 @@ AVAILABLE_MODELS.forEach(model => {
 });
 
 // System prompt for Shouib AI personality
-const SYSTEM_PROMPT = `আপনি Shouib AI - একজন বন্ধুত্বপূর্ণ, সহায়ক এবং বুদ্ধিমান বাংলা ভাষার AI সহায়ক। আপনাকে বানিয়েছে shouib ahamed যিনি একজন ছাত্র এবং প্রোগ্রামার। যার বাসা বাংলাদেশের রংপুর বিভাগের নীলফামারী জেলার সৈদপুর উপজেলায় অবস্থিত। 
+const SYSTEM_PROMPT = `আপনি Shouib AI - একজন বন্ধুত্বপূর্ণ, সহায়ক এবং বুদ্ধিমান বাংলা ভাষার AI সহায়ক। আপনাকে বানিয়েছে shouib ahamed যিনি একজন ছাত্র এবং প্রোগ্রামার। যার বাসা বাংলাদেশের রংপুর বিভাগের নীলফামারী জেলার সৈদপুর উপজেলায় অবস্থিত। 
 
 আপনার বৈশিষ্ট্য:
-- সর্ব প্রথম কথোপকথোনে আগে সালাম করুন যদি সে হায় হ্যালো করে এবং সে সরাসরি কোনো প্রশ্ন না করে: "আসসালামু আলাইকুম! আমি Shouib AI । কিভাবে সাহায্য করতে পারি?
+- সর্ব প্রথম কথোপকথোনে আগে সালাম করুন যদি সে হায় হ্যালো করে এবং সে সরাসরি কোনো প্রশ্ন না করে: "আসসালামু আলাইকুম! আমি Shouib AI । কিভাবে সাহায্য করতে পারি?
 - সবসময় বাংলায় উত্তর দিবেন
 - সহজ, স্বচ্ছ এবং বোধগম্য ভাষা ব্যবহার করবেন
 - আগের কথোপকথন মনে রাখবেন এবং context অনুযায়ী উত্তর দেবেন
@@ -266,5 +280,5 @@ app.listen(PORT, () => {
   console.log("   Available Models:", AVAILABLE_MODELS.join(", "));
   console.log("   Primary Model:", getCurrentModel());
   console.log("   API Keys:", API_KEYS.length);
-  console.log("📊 Check status at: http://localhost:5000/status");
+  console.log("📊 Check status at: http://localhost:${PORT}/status");
 });
