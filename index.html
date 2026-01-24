@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shouib AI - চ্যাটবট</title>
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Noto Sans Bengali', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 900px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header - সম্পূর্ণ সাজানো */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 30px;
+            color: white;
+            position: relative;
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .ai-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .ai-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .ai-text h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+        
+        .ai-text p {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        /* Chat Area - মেসেজ সাজানো */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            background: linear-gradient(180deg, #f8f9ff 0%, #f0f2ff 100%);
+        }
+        
+        /* Message Bubbles */
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .ai-message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+        }
+        
+        .user-message {
+            display: flex;
+            justify-content: flex-end;
+            max-width: 100%;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .ai-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .user-avatar {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            color: white;
+        }
+        
+        .message-content {
+            padding: 18px 22px;
+            border-radius: 18px;
+            max-width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+        
+        .ai-message .message-content {
+            background: white;
+            color: #2d3748;
+            border-top-left-radius: 5px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        /* Message Text Formatting */
+        .message-text {
+            font-size: 15px;
+        }
+        
+        /* Headings - সম্পূর্ণ সাজানো */
+        .message-text h1, .message-text h2, .message-text h3, 
+        .message-text h4, .message-text h5, .message-text h6 {
+            margin: 15px 0 10px 0;
+            color: #2d3748;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .message-text h1 {
+            font-size: 24px;
+            color: #4f46e5;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+        
+        .message-text h2 {
+            font-size: 20px;
+            color: #4f46e5;
+        }
+        
+        .message-text h3 {
+            font-size: 18px;
+            color: #5b6d95;
+        }
+        
+        .message-text h4 {
+            font-size: 16px;
+            color: #6b7280;
+        }
+        
+        /* Lists */
+        .message-text ul, .message-text ol {
+            margin: 10px 0 10px 20px;
+            padding-left: 15px;
+        }
+        
+        .message-text li {
+            margin-bottom: 5px;
+        }
+        
+        /* Code Formatting */
+        .message-text pre {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+        }
+        
+        .message-text code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: #dc2626;
+        }
+        
+        /* Paragraphs and Text */
+        .message-text p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        
+        .message-text strong, .message-text b {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+        
+        .message-text em, .message-text i {
+            font-style: italic;
+            color: #6b7280;
+        }
+        
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 18px 22px;
+            background: white;
+            border-radius: 18px;
+            border-top-left-radius: 5px;
+            max-width: 85%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .typing-indicator.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .typing-dots span {
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .typing-text {
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Input Area */
+        .input-area {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+        
+        #userInput {
+            width: 100%;
+            padding: 18px 20px;
+            padding-right: 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            color: #2d3748;
+        }
+        
+        #userInput:focus {
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        #userInput::placeholder {
+            color: #94a3b8;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 18px;
+        }
+        
+        #sendBtn {
+            padding: 16px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        #sendBtn:active {
+            transform: translateY(0);
+        }
+        
+        #sendBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Welcome Message */
+        .welcome-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 10px 0 25px 0;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .welcome-card h2 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        
+        .welcome-card p {
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-size: 14.5px;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+        
+        /* Scrollbar Styling */
+        .chat-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-area::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                height: 90vh;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .ai-info {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .chat-area {
+                padding: 15px;
+            }
+            
+            .ai-message {
+                max-width: 95%;
+            }
+            
+            .message-content {
+                padding: 15px 18px;
+            }
+            
+            .input-area {
+                padding: 15px;
+                flex-wrap: wrap;
+            }
+            
+            #sendBtn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-content">
+                <div class="ai-info">
+                    <div class="ai-icon">🤖</div>
+                    <div class="ai-text">
+                        <h1>Shouib AI</h1>
+                        <p>আপনার ব্যক্তিগত বাংলা AI সহায়ক</p>
+                    </div>
+                </div>
+                <div class="header-buttons">
+                    <button class="header-btn" onclick="clearChat()">
+                        <span>🗑️</span> পরিষ্কার করুন
+                    </button>
+                    <button class="header-btn" onclick="showExamples()">
+                        <span>💡</span> উদাহরণ
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Area -->
+        <div class="chat-area" id="chatArea">
+            <div class="welcome-card">
+                <h2>👋 Shouib AI - এ স্বাগতম!</h2>
+                <p>আমি আপনার ব্যক্তিগত বাংলা AI সহায়ক। আপনি আমাকে যেকোনো প্রশ্ন করতে পারেন।</p>
+                <p>উদাহরণস্বরূপ: "বাংলাদেশের রাজধানী কোথায়?" বা "জাভাস্ক্রিপ্ট শেখার উপায় কি?"</p>
+            </div>
+            
+            <div class="message ai-message">
+                <div class="message-avatar ai-avatar">AI</div>
+                <div class="message-content">
+                    <div class="message-text">
+                        <h1>হ্যালো! আমি Shouib AI</h1>
+                        <p>আমি আপনার যেকোনো প্রশ্নের উত্তর দিতে প্রস্তুত। আপনি আমাকে <strong>যেকোনো বিষয়ে</strong> প্রশ্ন করতে পারেন।</p>
+                        <p>আমি নিম্নলিখিত বিষয়গুলিতে সাহায্য করতে পারি:</p>
+                        <ul>
+                            <li>সাধারণ জ্ঞান প্রশ্ন</li>
+                            <li>টেকনিক্যাল সমস্যা সমাধান</li>
+                            <li>কোডিং হেল্প</li>
+                            <li>শেখার গাইডলাইন</li>
+                        </ul>
+                        <p><em>কিভাবে সাহায্য করতে পারি?</em> 😊</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="typing-text">Shouib AI Typing...</div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="আপনার প্রশ্ন এখানে লিখুন..." onkeypress="handleEnter(event)">
+                <div class="input-icon">✏️</div>
+            </div>
+            <button id="sendBtn" onclick="sendMessage()">
+                <span>📤</span> পাঠান
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Conversation history for context
+        let conversationHistory = [];
+        
+        // Format messages with proper HTML structure
+        function formatMessage(text) {
+            let formattedText = text
+                // Convert markdown-like headers
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                // Convert bold and italic
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                // Convert lists
+                .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                // Convert code blocks
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                // Convert line breaks to paragraphs
+                .split('\n\n')
+                .map(para => {
+                    if (para.startsWith('<') || para.trim() === '') return para;
+                    return `<p>${para}</p>`;
+                })
+                .join('');
+            
+            // Wrap lists properly
+            formattedText = formattedText.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+            
+            return formattedText;
+        }
+        
+        function addMessage(text, isUser) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            
+            if (isUser) {
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `
+                    <div class="message-avatar user-avatar">You</div>
+                    <div class="message-content">
+                        <div class="message-text">${text}</div>
+                    </div>
+                `;
+            } else {
+                messageDiv.className = 'message ai-message';
+                const formattedText = formatMessage(text);
+                messageDiv.innerHTML = `
+                    <div class="message-avatar ai-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-text">${formattedText}</div>
+                    </div>
+                `;
+            }
+            
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+        
+        function showTyping(show) {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.className = show ? 'typing-indicator active' : 'typing-indicator';
+            if (show) {
+                const chatArea = document.getElementById('chatArea');
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Add user message
+            addMessage(question, true);
+            conversationHistory.push({ role: 'user', text: question });
+            
+            input.value = '';
+            sendBtn.disabled = true;
+            showTyping(true);
+            
+            try {
+                // আপনার আসল API endpoint ইউজ করুন
+                const response = await fetch('http://localhost:5000/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        question: question,
+                        history: conversationHistory.slice(-6)
+                    })
+                });
+                
+                const data = await response.json();
+                showTyping(false);
+                
+                if (data.reply) {
+                    // Add AI message with typewriter effect
+                    const chatArea = document.getElementById('chatArea');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message ai-message';
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-avatar ai-avatar">AI</div>
+                        <div class="message-content">
+                            <div class="message-text" id="typingText"></div>
+                        </div>
+                    `;
+                    
+                    chatArea.appendChild(messageDiv);
+                    
+                    let i = 0;
+                    const reply = data.reply;
+                    const typingText = messageDiv.querySelector('#typingText');
+                    
+                    const typeInterval = setInterval(() => {
+                        if (i < reply.length) {
+                            const partialText = formatMessage(reply.substring(0, i + 1));
+                            typingText.innerHTML = partialText + '<span style="border-right: 2px solid #667eea; animation: blink 1s infinite;"></span>';
+                            chatArea.scrollTop = chatArea.scrollHeight;
+                            i++;
+                        } else {
+                            clearInterval(typeInterval);
+                            typingText.innerHTML = formatMessage(reply);
+                            conversationHistory.push({ role: 'ai', text: reply });
+                        }
+                    }, 20);
+                } else {
+                    addMessage('দুঃখিত, আমি এখন উত্তর দিতে পারছি না।', false);
+                }
+            } catch (error) {
+                showTyping(false);
+                addMessage('সার্ভার সমস্যা হয়েছে। আবার চেষ্টা করুন। ⚠️', false);
+                console.error('Error:', error);
+            }
+            
+            sendBtn.disabled = false;
+            input.focus();
+        }
+        
+        function handleEnter(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function clearChat() {
+            if (confirm('আপনি কি সমস্ত চ্যাট ইতিহাস মুছে ফেলতে চান?')) {
+                conversationHistory = [];
+                const chatArea = document.getElementById('chatArea');
+                chatArea.innerHTML = `
+                    <div class="welcome-card">
+                        <h2>👋 Shouib AI - এ স্বাগতম!</h2>
+                        <p>আমি আপনার ব্যক্তিগত বাংলা AI সহায়ক। আপনি আমাকে যেকোনো প্রশ্ন করতে পারেন।</p>
+                        <p>উদাহরণস্বরূপ: "বাংলাদেশের রাজধানী কোথায়?" বা "জাভাস্ক্রিপ্ট শেখার উপায় কি?"</p>
+                    </div>
+                    <div class="message ai-message">
+                        <div class="message-avatar ai-avatar">AI</div>
+                        <div class="message-content">
+                            <div class="message-text">
+                                <h1>হ্যালো! আমি Shouib AI</h1>
+                                <p>চ্যাট ইতিহাস পরিষ্কার করা হয়েছে। আমি আবার আপনার সাহায্যের জন্য প্রস্তুত!</p>
+                                <p><strong>আপনার যেকোনো প্রশ্নের জন্য আমি এখানে আছি।</strong> 😊</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function showExamples() {
+            const examples = [
+                "বাংলাদেশের প্রধানমন্ত্রী কে?",
+                "পাইথন প্রোগ্রামিং কিভাবে শিখব?",
+                "আজকের তারিখ কি?",
+                "মেশিন লার্নিং কি?",
+                "ওয়েব ডেভেলপমেন্ট শেখার সেরা উপায় কি?"
+            ];
+            
+            const exampleText = examples.map((ex, i) => `${i + 1}. ${ex}`).join('\n');
+            alert('উদাহরণ প্রশ্ন:\n\n' + exampleText + '\n\nআপনি এইগুলোর মতো যেকোনো প্রশ্ন করতে পারেন।');
+        }
+        
+        // Add blinking cursor animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Focus input on load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('userInput').focus();
+        });
+    </script>
+</body>
+</html>
